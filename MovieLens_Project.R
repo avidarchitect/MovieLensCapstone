@@ -8,26 +8,54 @@
 #'     toc_depth: 4
 #' ---
 #' 
-## ----setup, include=FALSE-------------------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 
 #' \newpage
 #' # Introduction
-#' Machine Learning has several applications in different industries. One of the most successful and widely used system that employs machine learning is a Recommender system. Some of the examples of recommender systems include the likes of Netflix making a movie recommendation based on what you have watched earlier in your queue or Amazon making a product recommendation to purchase based on prior purchase history or popular items. Recommendation can be made using different approaches, such as predicting an outcome based on a combination of multiple parameters/attributes associated with the problem at hand or by using a ranking system to make recommendations. 
+#' Machine Learning has several applications in different industries. One of the most successful 
+#' and widely used system that employs machine learning is a Recommender system. 
+#' Some of the examples of recommender systems include the likes of Netflix making 
+#' a movie recommendation based on what you have watched earlier in your queue 
+#' or Amazon making a product recommendation to purchase based on prior purchase history
+#'  or popular items. Recommendation can be made using different approaches, such as 
+#'  predicting an outcome based on a combination of multiple parameters/attributes 
+#'  associated with the problem at hand or by using a ranking system to make recommendations. 
 #' 
 #' 
 #' # Executive Summary
 #' ## Dataset
-#' The MovieLens Capstone project involves application of machine learning techniques on a dataset of movie rankings provided by GroupLens, a research lab in the Department of Computer Science and Engineering at the University of Minnesota, that specializes in recommender systems. GroupLens Research has collected and made available rating data sets from the MovieLens web site (http://movielens.org) that will be the focus of this project. We will use the **[10M version of the MovieLens dataset](http://grouplens.org/datasets/movielens/10m/)**.
+#' The MovieLens Capstone project involves application of machine learning techniques 
+#' on a dataset of movie rankings provided by GroupLens, a research lab in the Department 
+#' of Computer Science and Engineering at the University of Minnesota, that specializes 
+#' in recommender systems. GroupLens Research has collected and made available rating data sets 
+#' from the MovieLens web site (http://movielens.org) that will be the focus of this project. 
+#' We will use the **[10M version of the MovieLens dataset](http://grouplens.org/datasets/movielens/10m/)**.
 #' 
 #' ## Goal
-#'  The goal of this Capstone is to train a machine learning algorithm using the inputs in one subset to predict movie ratings in the validation set. Reference code has been provided by the University to generate the training and validation sets that should be leveraged for this analysis. RMSE, known as the Root Mean Square Error, will be used to evaluate how close the predictions made by our model are to the actual/true values contained in the validation set. The desired RMSE should be a value less than 0.86490.  
-#' 
+#'  The goal of this Capstone is to train a machine learning algorithm using the inputs 
+#'  in one subset to predict movie ratings in the validation set. Reference code 
+#'  has been provided by the University to generate the training and validation sets 
+#'  that should be leveraged for this analysis. RMSE, known as the Root Mean Square Error, 
+#'  will be used to evaluate how close the predictions made by our model are to the 
+#'  actual/true values contained in the validation set. 
+#'  
+#'  The desired RMSE should be a value less than 0.86490.  
+
 #' 
 #' ## Overview
-#' Before we can review what is in the dataset, we need to load the dataset using the code provided by the University. The code to generate the training and validation dataset has been executed and stored in a workspace file - Univ_Provided_Dataset_Workspace.Rdata to simplify this report. Actual code can be found in the accompanying R file submitted with the assignment.
+#' Before we can review what is in the dataset, we need to load the dataset using the code 
+#' provided by the University. The code to generate the training and validation dataset 
+#' has been executed and stored in a workspace file - Univ_Provided_Dataset_Workspace.Rdata 
+#' to simplify the report. 
 #' 
-## ----warning=FALSE, message=FALSE-----------------------------------------------------
+#' To load the dataset from this workspace file, simply uncomment the following line
+#' and skip the code between BEGIN and END University provided code comments.
+#' 
+#' load("Univ_Provided_Dataset_Workspace.Rdata")
+
+
+## ----warning=FALSE, message=FALSE----------------------------------------------------
 ##########################################################
 # BEGIN: University provided code to generate the datasets for training and validation
 # Create edx set, validation set (final hold-out test set)
@@ -142,7 +170,8 @@ class(validation)
 str(edx)
 
 #' 
-#' We see that edx (*our training set*) dataset has **9000055** observations of 6 variables/features.
+#' We see that edx (*our training set*) dataset has **9000055** observations 
+#' of 6 variables/features.
 #' 
 ## -------------------------------------------------------------------------------------
 # Validation Set = validation
@@ -156,11 +185,13 @@ str(validation)
 #' - **Validation set** = 10%
 #'  
 #' 
-#' We are interested in the prediction of a movie rating (y). Consequently, we can make the following determination:
+#' We are interested in the prediction of a movie rating (y). Consequently, 
+#' we can make the following determination:
 #' 
 #' - rating = Outcome/Dependent Variable "y"
 #' 
-#' - Remaining 5 variables are the predictors/independent variables that will be used for our analysis.
+#' - Remaining 5 variables are the predictors/independent variables that will be 
+#' used for our analysis.
 #' 
 #' Here is another view of the dataset using the **glimpse()** function from the *dplyr* package.
 ## -------------------------------------------------------------------------------------
@@ -171,23 +202,30 @@ glimpse(edx)
 ## -------------------------------------------------------------------------------------
 head(edx)
 
-#' A quick look at the **top 5 rows** in the dataset reveals that each row represents the rating provided by a given user for a single movie. The movie may belong to multiple genres that are pipe-delimited in the genres column.
+#' A quick look at the **top 5 rows** in the dataset reveals that each row represents 
+#' the rating provided by a given user for a single movie. The movie may belong 
+#' to multiple genres that are pipe-delimited in the genres column.
 #' 
-#' We will now document our findings for each of the 5 features (predictors) and our **outcome**/dependent variable.
+#' We will now document our findings for each of the 5 features (predictors) 
+#' and our **outcome**/dependent variable.
 #' 
 #' 1. **userId**: Contains unique ID for each user who provided a rating
 #' 
 #' 2. **movieId**: Contains unique ID for the movie being rated
 #' 
-#' 3. **timestamp**: Contains the date and time a user provided a rating for the movie under consideration
+#' 3. **timestamp**: Contains the date and time a user provided a rating for the movie 
+#'    under consideration
 #' 
 #' 4. **title**: Holds the movie title
 #' 
-#' 5. **genre**: Contains *pipe-delimited* genres associated with a movie. A movie can be associated with more than 1 genre and this is something that we should keep in mind for any analysis because this single field contains multiple values.
+#' 5. **genre**: Contains *pipe-delimited* genres associated with a movie. A movie 
+#'    can be associated with more than 1 genre and this is something that we should 
+#'    keep in mind for any analysis because this single field contains multiple values.
 #' 
 #' **Outcome (y)**
 #' 
-#' 6. **rating**: Contains the rating provided by a user for a given movie. This is what we want to predict using machine learning.
+#' 6. **rating**: Contains the rating provided by a user for a given movie. 
+#'    This is what we want to predict using machine learning.
 #' 
 #' ## Key Steps
 #' We will be undertaking the following steps to achieve our goal of predicting the movie rating:
@@ -201,26 +239,50 @@ head(edx)
 #' * Confirm RMSE achieved meets our desired goal of < 0.86490
 #' 
 #' 
-#' For the model building, we will begin with linear regression to identify statistically significant features followed by gradual inclusion of each feature in our linear regression models. Based on how each iteration yields the RMSE values, this will be followed by Regularization for the most significant features, user and movie effects. Finally, we will employ a Recommender System library, recosystem, that will help deal with matrix sparsity demonstrated in the data exploration and visualization sections by employing Matrix Factorization and build our model to obtain an improved RMSE Score. 
+#' For the model building, we will begin with linear regression to identify 
+#' statistically significant features followed by gradual inclusion of each feature 
+#' in our linear regression models. Based on how each iteration yields the RMSE values, 
+#' this will be followed by Regularization for the most significant features, 
+#' user and movie effects. 
+#' 
+#' Finally, we will employ a Recommender System library, recosystem, 
+#' that will help deal with matrix sparsity demonstrated in the data exploration 
+#' and visualization sections by employing Matrix Factorization and build our model 
+#' to obtain an improved RMSE Score. 
 #' 
 #' \newpage
 #' # Methods/Analysis
 #' ## Process and Techniques
 #' ### Data Cleaning/Pre-processing/Wrangling
-#' Data is generated and maintained differently in different systems. Depending on how efficient business constraints exist in a system for capturing data, performing input validations, etc., the data captured by the system may contain a lot of junk/irrelevant kind of data for one or more fields in addition to being plagued by a very common issue, missing data.
+#' Data is generated and maintained differently in different systems. Depending on 
+#' how efficient business constraints exist in a system for capturing data, 
+#' performing input validations, etc., the data captured by the system may contain 
+#' a lot of junk/irrelevant kind of data for one or more fields in addition to 
+#' being plagued by a very common issue, missing data.
 #' 
-#' We begin our data analysis by first examining the current data structure, looking for obvious signs of missing values, identify the need to either discard the missing values or substitute them with best practices, such as average of the given field across all observations. As such, Data exploration and Data pre-processing go hand in hand and may require multiple iterations before proceeding with actual analysis.
+#' We begin our data analysis by first examining the current data structure, 
+#' looking for obvious signs of missing values, identify the need to 
+#' either discard the missing values or substitute them with best practices, 
+#' such as average of the given field across all observations. 
 #' 
-#' Building upon our knowledge from executive summary, we now dive deep into the constituents of our dataset to observe signs of any missing data as well as get a summary of how the different features of our data can potentially impact our analysis.
+#' As such, Data exploration and Data pre-processing go hand in hand and 
+#' may require multiple iterations before proceeding with actual analysis.
 #' 
-#' We start with the summary() function to obtain the big picture on our dataset for things, such as min, max, median, quantiles, class, etc.
+#' Building upon our knowledge from executive summary, we now dive deep 
+#' into the constituents of our dataset to observe signs of any missing data 
+#' as well as get a summary of how the different features of our data 
+#' can potentially impact our analysis.
+#' 
+#' We start with the summary() function to obtain the big picture on our dataset
+#'  for things, such as min, max, median, quantiles, class, etc.
 ## -------------------------------------------------------------------------------------
 summary(edx)
 
 #' 
 #' **Missing Data**
 #' 
-#' Our key objective is to predict ratings. So let us first check to see if there are any rows in the dataset that are missing values for rating.
+#' Our key objective is to predict ratings. So let us first check to see 
+#' if there are any rows in the dataset that are missing values for rating.
 ## -------------------------------------------------------------------------------------
 # Movies that have a rating of 0/Movies without any rating
 zero_ratings<- edx %>% 
@@ -231,8 +293,10 @@ length(zero_ratings[[1]])
 #' 
 #' **Data Pre-processing**  
 #' 
-#' To avoid the issue of overfitting by building different models and subjecting them to the same validation/final hold-out set (as confirmed with the TA/edx Staff in edX discussion forum),
-#' we will split our current University provided edx training set into a train and test set.
+#' To avoid the issue of overfitting by building different models and subjecting
+#'  them to the same validation/final hold-out set (as confirmed with the 
+#'  TA/edx Staff in edX discussion forum), we will split our current 
+#'  University provided edx training set into a train and test set.
 #' 
 ## -------------------------------------------------------------------------------------
 
@@ -242,8 +306,8 @@ library(tidyr)
 set.seed(123)
 
 ############################################
-# Generate the Training and Test set from original edx training set provided by University
-# to avoid overfitting 
+# Generate the Training and Test set from original edx training set 
+# provided by University to avoid overfitting 
 ############################################
 
 #We will go for 80-20 split of Train and Test data
@@ -262,18 +326,23 @@ test_set <- test_set %>%
   semi_join(training_set, by = "movieId") %>%
   semi_join(training_set, by = "userId") # 1799975 obs. of 6 variables (36 entries were removed)
 
+
+#' Effectively, our new test set has 20% of original edx data and new 
+#' training set has 80% of edx data
 #' 
-#' Effectively, our new test set has 20% of original edx data and new training set has 80% of edx data
-#' 
-#' For **ALL** our models, we will be using these new train_set and test_set to make predictions
-#' and compare RMSE values.
+#' For **ALL** our models, we will be using these new train_set and test_set 
+#' to make predictions and compare RMSE values.
 #' 
 #' For the **CHOSEN** model, we will additionally subject that to the original validation set
 #' to get the RMSE value. This way, we will NOT be overfitting and be in compliance with 
 #' the requirements confirmed by the TA in the edx discussion forum.
 #' 
 #' ### Data Exploration and Visualization
-#' We begin exploring the different features of the dataset including the outcome "rating" that we want to predict. Understanding what the different dataset features contain helps us gain meaningful insights about how each attribute/feature contributes to our data analysis in addition to determining the appropriate modeling technique.
+#' We begin exploring the different features of the dataset including the 
+#' outcome "rating" that we want to predict. Understanding what the different 
+#' dataset features contain helps us gain meaningful insights about 
+#' how each attribute/feature contributes to our data analysis in addition to 
+#' determining the appropriate modeling technique.
 #' 
 #' #### Unique Users (Feature: userId)\  
 #' 
@@ -298,11 +367,18 @@ length(unique_movies_in_edx[[1]])
 #' 
 #' #### Matrix View and Sparsity\  
 #' 
-#' We can imagine this dataset as a matrix of rows and columns where each user would have 1 row and the rating provided by the user would be captured in 1 column for every movie included in the dataset. 
+#' We can imagine this dataset as a matrix of rows and columns where each user 
+#' would have 1 row and the rating provided by the user would be captured 
+#' in 1 column for every movie included in the dataset. 
 #' 
-#' If we multiply the number of unique users (69878) by number of unique movies (10677), we get about 747 million rows. However, our data table has only 9,000,055 rows. This may indicate that not every user may have rated every single movie. Visualizing such data as a large matrix, with users on the rows and movies on the columns, we can expect to see a huge amount of empty cells. 
+#' If we multiply the number of unique users (69878) by number of unique movies (10677),
+#'  we get about 747 million rows. However, our data table has only 9,000,055 rows. 
+#'  This may indicate that not every user may have rated every single movie. 
+#'  Visualizing such data as a large matrix, with users on the rows and movies 
+#'  on the columns, we can expect to see a huge amount of empty cells. 
 #' 
-#' Let us validate if that is indeed the case. To do this, we will use the gather function on a sample of records involving 5 movies and 20 users.
+#' Let us validate if that is indeed the case. To do this, we will use the 
+#' gather function on a sample of records involving 5 movies and 20 users.
 #' 
 ## -------------------------------------------------------------------------------------
 # matrix for 5 movies and 20 users 
@@ -319,9 +395,15 @@ tab <- edx %>%
 tab %>% knitr::kable()
 
 #' 
-#' As expected, we see a lot of movies containing NA in their ratings for many users. This indicates that our matrix is sparse. But let us dig further to see how sparse the matrix could possibly be.To do this, we will take a random sample of 100 movies and 100 users and visualize it as follows. The  yellow dots indicate a user/movie combination for which we have a rating.  
+#' As expected, we see a lot of movies containing NA in their ratings for 
+#' many users. This indicates that our matrix is sparse. But let us dig further
+#'  to see how sparse the matrix could possibly be.To do this, we will take a 
+#'  random sample of 100 movies and 100 users and visualize it as follows. 
+#'  The  yellow dots indicate a user/movie combination for which we have a rating.  
 #' 
-#' Looking at the picture below, it is clear that we have a very sparse matrix. We will keep this in mind when choosing a model later in our analysis involving Recommendation Systems that help alleviate some of these concerns.
+#' Looking at the picture below, it is clear that we have a very sparse matrix. 
+#' We will keep this in mind when choosing a model later in our analysis 
+#' involving Recommendation Systems that help alleviate some of these concerns.
 #' 
 ## -------------------------------------------------------------------------------------
 # matrix for a random sample of 100 movies and 100 users with yellow 
@@ -340,7 +422,9 @@ abline(h=0:100+0.5, v=0:100+0.5, col = "grey")
 #' 
 #' #### Movies with Most Ratings/Popular movies (Feature: title)\   
 #' 
-#' Next, let us explore which movies received the most ratings to understand their popularity. We do this by grouping the dataset by title and summarizing the rating and sorting the results in descending order of the rating count.
+#' Next, let us explore which movies received the most ratings to understand 
+#' their popularity. We do this by grouping the dataset by title and summarizing 
+#' the rating and sorting the results in descending order of the rating count.
 #' 
 ## -------------------------------------------------------------------------------------
 # Movies with Most Ratings: Group by Title, Summarize, and Sort in DESC order
@@ -356,7 +440,9 @@ head(edx_by_title) # Load the top 5 movies from the results
 #' 
 #' #### Visualize Ratings by userId\  
 #' 
-#' 10677 unique movies were rated by one or more of the 69878 unique users. But do we know if every user rated every single movie? Let us plot a histogram of Ratings by UserId.
+#' 10677 unique movies were rated by one or more of the 69878 unique users. 
+#' But do we know if every user rated every single movie? Let us plot a 
+#' histogram of Ratings by UserId.
 #' 
 #' We see that:
 #' 1. Some users were very active in rating one or more movies.
@@ -377,7 +463,8 @@ edx %>%
 #' 
 #' #### Visualize Ratings by movieId\  
 #' 
-#' Similar to ratings by user, we now plot ratings by movieId and find that some movies received much more ratings than others.
+#' Similar to ratings by user, we now plot ratings by movieId and find that 
+#' some movies received much more ratings than others.
 #' 
 ## -------------------------------------------------------------------------------------
 edx %>%
@@ -393,7 +480,9 @@ edx %>%
 #' 
 #' #### Visualize Ratings by timestamp\  
 #' 
-#' The timestamp field stores date in a format not readily consumable for our analysis. We will first convert it to a date format and attempt to visualize the number of ratings provided by a given month.
+#' The timestamp field stores date in a format not readily consumable for our 
+#' analysis. We will first convert it to a date format and attempt to visualize 
+#' the number of ratings provided by a given month.
 #' 
 ## -------------------------------------------------------------------------------------
 edx %>%
@@ -410,7 +499,8 @@ edx %>%
 
 
 #' 
-#' Next, let us visualize the number of ratings by a given week to get a more granular view of the data.
+#' Next, let us visualize the number of ratings by a given week to get a more 
+#' granular view of the data.
 #' 
 ## -------------------------------------------------------------------------------------
 edx %>%
@@ -427,16 +517,25 @@ edx %>%
 
 
 #' 
-#' We find that while the timestamp feature has some effect on the ratings, it is relatively less given the flat nature of the curve. In the modeling section below, we will be examining this more closely with linear regression. 
+#' We find that while the timestamp feature has some effect on the ratings, it 
+#' is relatively less given the flat nature of the curve. In the modeling 
+#' section below, we will be examining this more closely with linear regression. 
 #' 
 #' 
 #' #### Genres with Most Ratings/Popular genres (Feature: genres)\    
 #' 
-#' A movie may fall under multiple genres, a fact evident by the pipe-delimited values contained in the genres column in the data set. Let us now determine how many genres exist in the dataset and which ones are the most popular; i.e., which ones received the most rating.
+#' A movie may fall under multiple genres, a fact evident by the pipe-delimited 
+#' values contained in the genres column in the data set. Let us now determine 
+#' how many genres exist in the dataset and which ones are the most popular; 
+#' i.e., which ones received the most rating.
 #' 
-#' Because the genres column contains multiple values, we will use the separate_rows function from the tidyverse package to split out the rows such that each row contains a single genre. This will help us in simplifying our analysis by genre.
+#' Because the genres column contains multiple values, we will use the 
+#' separate_rows function from the tidyverse package to split out the rows such 
+#' that each row contains a single genre. This will help us in simplifying our 
+#' analysis by genre.
 #' 
-#' **Note:** This process of separating the rows can take longer given the sheer volume of data contained in our dataset.
+#' **Note:** This process of separating the rows can take longer given the 
+#' sheer volume of data contained in our dataset.
 #' 
 ## ----message=FALSE--------------------------------------------------------------------
 # Genres with Most Ratings/Popular genres: Separate rows for individual Genre, 
@@ -450,7 +549,11 @@ edx_by_genre <- edx %>% separate_rows(genres,sep="\\|") %>%
 #' 
 #' **Number of Unique Genres**  
 #' 
-#' Let us now review how many unique Genres exist in the data set. We find that there are 20 records in our summarized results. Upon closer inspection by listing all the results, we see the last row contains "(no genres listed)", indicating that there were 7 ratings provided for one or more movies that did not have any genre associated with them.
+#' Let us now review how many unique Genres exist in the data set. We find that 
+#' there are 20 records in our summarized results. Upon closer inspection by 
+#' listing all the results, we see the last row contains "(no genres listed)", 
+#' indicating that there were 7 ratings provided for one or more movies that 
+#' did not have any genre associated with them.
 #' 
 #' In summary, we see 19 unique Generes.
 #' 
@@ -465,7 +568,11 @@ edx_by_genre # Display all Genres with their rating count
 #' 
 #' #### Visualize Genre Effects\  
 #' 
-#' Given the one-to-many relationship between a movie and genres as stored in the genres column, for a simple visualization of any genre effect on the ratings, we will focus our examination for only those genres that received over 100K ratings. We will not worry about separating genres as individual rows for now.
+#' Given the one-to-many relationship between a movie and genres as stored in 
+#' the genres column, for a simple visualization of any genre effect on the 
+#' ratings, we will focus our examination for only those genres that received 
+#' over 100K ratings. We will not worry about separating genres as 
+#' individual rows for now.
 #' 
 ## -------------------------------------------------------------------------------------
 edx %>%
@@ -493,7 +600,9 @@ edx %>%
 #' 
 #' **Popular Genres**  
 #' 
-#' In reviewing the summarized Genres above, we see that Drama movies were the most popular followed by those associated with Comedy, Action, and Thriller. Below code shows the top 5 Genres using the head() function.
+#' In reviewing the summarized Genres above, we see that Drama movies were the 
+#' most popular followed by those associated with Comedy, Action, and Thriller. 
+#' Below code shows the top 5 Genres using the head() function.
 ## -------------------------------------------------------------------------------------
 head(edx_by_genre) # Display the top 5 Genres
 #rm(edx_by_genre) # Cleanup the temporary variables
@@ -501,9 +610,14 @@ head(edx_by_genre) # Display the top 5 Genres
 #' 
 #' #### Insight: Popularity, Movie, and Genre Relationship\  
 #' 
-#' So far, we identified the most popular movies and genres by summarizing the edx dataset by respective features and sorting them in descending order of their rating count. But is there anything additional we can deduce by putting the 2 results together? Let us find out.
+#' So far, we identified the most popular movies and genres by summarizing 
+#' the edx dataset by respective features and sorting them in descending order 
+#' of their rating count. But is there anything additional we can deduce by 
+#' putting the 2 results together? Let us find out.
 #' 
-#' We will now attempt to summarize the dataset by grouping it with both the features - title and genre, followed by a summary of the rating count and sorting the results in descending order of the number of the rating count.
+#' We will now attempt to summarize the dataset by grouping it with both the 
+#' features - title and genre, followed by a summary of the rating count and 
+#' sorting the results in descending order of the number of the rating count.
 #' 
 ## -------------------------------------------------------------------------------------
 edx_by_title_and_genre <- edx %>%
@@ -512,7 +626,14 @@ edx_by_title_and_genre <- edx %>%
                               top_n(10,rating_count)%>%
                               arrange(desc(rating_count))
 
-#' Let us now compare the results. Reviewing the 3 pieces of information together, we can see that the top rated movies also belong to the top rated genres. For example, Pulp Fiction (1994) has the most rating of 130,302, it is associated with the "Drama" genre, which also happens to possess the most rating of 3,910,127. Similar finding can be made for the remaining top 4 movies displayed in our results. 
+#' Let us now compare the results. Reviewing the 3 pieces of information 
+#' together, we can see that the top rated movies also belong to the 
+#' top rated genres. 
+#' 
+#' For example, Pulp Fiction (1994) has the most rating of 130,302, 
+#' it is associated with the "Drama" genre, which also happens to possess the 
+#' most rating of 3,910,127. Similar finding can be made for the remaining 
+#' top 4 movies displayed in our results. 
 ## -------------------------------------------------------------------------------------
 head(edx_by_title_and_genre)
 head(edx_by_genre)
@@ -522,9 +643,13 @@ head(edx_by_title)
 #' 
 #' #### Visualize Rating Count Histogram (Outcome: rating)\  
 #' 
-#' We previously confirmed that no movie has received a rating of 0. A visual on how many times a certain rating was received helps us quickly determine if there were any rating values that were never provided by a user. 
+#' We previously confirmed that no movie has received a rating of 0. A visual 
+#' on how many times a certain rating was received helps us quickly determine 
+#' if there were any rating values that were never provided by a user. 
 #' 
-#' There are different values for ratings ranging from 0 through 5 stars with the possibility of half star ratings too. We will now build a Histogram that shows how often a given rating was received.
+#' There are different values for ratings ranging from 0 through 5 stars with 
+#' the possibility of half star ratings too. We will now build a Histogram that 
+#' shows how often a given rating was received.
 #' 
 ## -------------------------------------------------------------------------------------
 # Add a new column that represents a half star or full star rating.
@@ -549,7 +674,9 @@ ggplot(df_ratings,aes(x=edx_01$rating, fill=edx_01$Star_Type))+
 
 
 #' 
-#' We can also get a comprehensive count of how often each rating was received by executing the following code that groups the dataset by rating and sorts it in a descending order.
+#' We can also get a comprehensive count of how often each rating was received 
+#' by executing the following code that groups the dataset by rating and sorts 
+#' it in a descending order.
 #' 
 ## -------------------------------------------------------------------------------------
 # Count for each rating 
@@ -563,13 +690,23 @@ rm(edx_01,df_ratings) # Clean up the temporary variables
 #' 
 #' #### Insight: Ratings    
 #' 
-#' - The Rating Count Histogram shows that users gave more full star ratings than half star ratings.
-#' - No movie received a rating of 0. This reinforces our previous finding about no missing data for ratings. While we do not know for sure why this is the case, it is possible that the survey system that requested user ratings must be enforcing a business constraint that every movie should receive a non-zero rating to collect meaningful data for analysis.
-#' - The tibble produced by the last snippet of code shows that ratings of 4, 3, 3.5 and 5 were the most provided by users as evident by the corresponding rating count for each of the ratings that are displayed in a descending order of their count. 
+#' - The Rating Count Histogram shows that users gave more full star ratings 
+#'   than half star ratings.
+#' - No movie received a rating of 0. This reinforces our previous finding about 
+#'   no missing data for ratings. While we do not know for sure why this is the 
+#'   case, it is possible that the survey system that requested user ratings must 
+#'   be enforcing a business constraint that every movie should receive a 
+#'   non-zero rating to collect meaningful data for analysis.
+#' - The tibble produced by the last snippet of code shows that ratings of 
+#'   4, 3, 3.5 and 5 were the most provided by users as evident by the 
+#'   corresponding rating count for each of the ratings that are displayed in a 
+#'   descending order of their count. 
 #' 
 #' ### Modeling Approach   
 #' 
-#' For each of the models we build below, we will be measuring their performance using a metric, Root Mean Squared Error (RMSE). RMSE is square root of the average of the residuals squared:
+#' For each of the models we build below, we will be measuring their performance
+#'  using a metric, Root Mean Squared Error (RMSE). RMSE is square root of the 
+#'  average of the residuals squared:
 #' 
 #' We write a function called RMSE() that takes two numeric vectors as input:
 #' 
@@ -592,13 +729,17 @@ RMSE <- function(actual_ratings, predicted_ratings){
 #' #### Linear Regression-based Models
 #' 
 #' 
-#' **Feature Scaling**: Feature scaling is a method used to normalize the range of independent variables or features of data. In our current analysis, we are going to use the fit() function which takes care of the needs of any Feature scaling.
+#' **Feature Scaling**: Feature scaling is a method used to normalize the range 
+#' of independent variables or features of data. In our current analysis, we are 
+#' going to use the fit() function which takes care of the needs of any 
+#' Feature scaling.
 #' 
 #' **Fitting Multiple Linear Regression to the Training set**\  
 #' 
 #' We will use the lm() function to build our model on the training_set.
 #' **rating** is going to be a linear combination of multiple independent variables
-#' so our formula would include rating ~ column 1 + column 2 + etc. The model will be built on the training_set.
+#' so our formula would include rating ~ column 1 + column 2 + etc. The model 
+#' will be built on the training_set.
 #' 
 ## -------------------------------------------------------------------------------------
 
@@ -607,21 +748,24 @@ regressor_1 = lm(formula = rating ~ userId+movieId+timestamp, data = training_se
 # Let us review the contents of regressor using summary()
 summary(regressor_1)
 
-#' We  find that all the 3 features, **userId, movieId, and timestamp** have 3 asterisks, indicating a strong statistical significance on our outcome, rating.
+#' We  find that all the 3 features, **userId, movieId, and timestamp** have 
+#' 3 asterisks, indicating a strong statistical significance on our outcome, rating.
 #' 
 #' Let us make our initial prediction against the test_set.
 ## -------------------------------------------------------------------------------------
 y_pred1 = predict(regressor_1, newdata = test_set)
 
 
-#' Compute the RMSE on this initial model to get a sense on our model's ability to make good predictions.
+#' Compute the RMSE on this initial model to get a sense on our model's ability 
+#' to make good predictions.
 #' 
 ## -------------------------------------------------------------------------------------
 rmse_model1<- RMSE(test_set$rating,y_pred1)
 rmse_model1 # Print the RMSE value: It is 1.05963
 
 #' 
-#' At this point, we have not accounted for the biases resulting from several of the following scenarios:
+#' At this point, we have not accounted for the biases resulting from several 
+#' of the following scenarios:
 #' 
 #' 1. Not all users might have rated all movies. 
 #' 
@@ -632,10 +776,12 @@ rmse_model1 # Print the RMSE value: It is 1.05963
 #' 4. Some movies get rated more than others
 #' 
 #' Above biases are explained in the accompanying report under Data Exploration
-#' and Visualization. Since we have already determined from our initial model above that user, movie and time are statistically significant in predicting our
+#' and Visualization. Since we have already determined from our initial model 
+#' above that user, movie and time are statistically significant in predicting our
 #' outcome, ratings, we will now proceed with the next part of our analysis.
 #' 
-#' Let us proceed with introducing the biases associated with each of the three effects below:
+#' Let us proceed with introducing the biases associated with each of the three 
+#' effects below:
 #' 
 #' 1. user effects
 #' 
@@ -643,7 +789,9 @@ rmse_model1 # Print the RMSE value: It is 1.05963
 #' 
 #' 3. time effects 
 #' 
-#' Given that using the *lm()* function will result in large computations for this high volume data set, we will handle the regression problem differently using a combination of group_by, summarize, and joins.
+#' Given that using the *lm()* function will result in large computations for 
+#' this high volume data set, we will handle the regression problem differently 
+#' using a combination of group_by, summarize, and joins.
 #' 
 #' \newpage
 #' **Model #A: Using SIMPLE MEAN**\  
@@ -748,7 +896,11 @@ rmse_model_c # Print the results
 #' 
 #' *Pre-processing for considering timestamp*\  
 #' 
-#' **Note:** Because timestamp is not in a form we can consume directly for our analysis, we will employ the lubridate() function to convert the time in to a proper Date value and round it to let's say a "week" so that it is easy to see how many movies got rated in a "week's" time. We can also choose a month but we will stick with "week" for now.
+#' **Note:** Because timestamp is not in a form we can consume directly for our 
+#' analysis, we will employ the lubridate() function to convert the time in to 
+#' a proper Date value and round it to let's say a "week" so that it is easy to 
+#' see how many movies got rated in a "week's" time. We can also choose a month 
+#' but we will stick with "week" for now.
 #' 
 ## -------------------------------------------------------------------------------------
 # Step 0: Pre-processing for extracting DATE value from timestamp field 
@@ -773,7 +925,10 @@ l_test_set<- l_test_set %>%
 
 head(l_test_set) # Let us review that the newly extracted date shows correctly
 
-#' We are now ready to proceed with our analysis involving timestamp. We will undertake this analysis against the l_training_set and l_test_set both of which contain a new column, date_rated, which is a date representation of the timestamp field present in the original data set.
+#' We are now ready to proceed with our analysis involving timestamp. We will 
+#' undertake this analysis against the l_training_set and l_test_set both of 
+#' which contain a new column, date_rated, which is a date representation of 
+#' the timestamp field present in the original data set.
 #' 
 ## -------------------------------------------------------------------------------------
 #' Step 1: Build the model against the training_set considering user+movie effects
@@ -818,15 +973,21 @@ rmse_results %>% knitr::kable()
 #' 
 #' We make the following findings:\  
 #' 
-#' 1. Without accounting for any biases, we at least found that user, movie, and timestamp were statistically significant in predicting our outcome "rating"
+#' 1. Without accounting for any biases, we at least found that user, movie, 
+#'    and timestamp were statistically significant in predicting our outcome "rating"
 #' 
-#' 2. The simple mean based model did not yield a good RMSE value because it does not account for the biases present in the data set
+#' 2. The simple mean based model did not yield a good RMSE value because it 
+#'    does not account for the biases present in the data set
 #' 
-#' 3. Introduction of the first bias for "Movie effects" showed a noticeable improvement in RMSE because we are sharpening our model with additional information about the influence of Movie related biases.
+#' 3. Introduction of the first bias for "Movie effects" showed a noticeable 
+#'    improvement in RMSE because we are sharpening our model with additional 
+#'    information about the influence of Movie related biases.
 #' 
-#' 4. An incremental addition of User effects to the movie effects-based model led to a further improvement of our RMSE from 0.9434 to 0.86616
+#' 4. An incremental addition of User effects to the movie effects-based model 
+#'    led to a further improvement of our RMSE from 0.9434 to 0.86616
 #' 
-#' 5. A further incremental addition of Time effects had a very marginal impact on our RMSE value.
+#' 5. A further incremental addition of Time effects had a very marginal 
+#'    impact on our RMSE value.
 #' 
 ## -------------------------------------------------------------------------------------
 rm(l_training_set,l_test_set,regressor_1,temp1,temp2,
@@ -837,7 +998,10 @@ rm(l_training_set,l_test_set,regressor_1,temp1,temp2,
 #' 
 #' \newpage
 #' **Model: Regularize Movie + User Effects**\  
-#' Given that we have already exhausted our options so far and the fact that adding timestamp had very little impact on our RMSE, we will now focus on **Regularizing our data** and consider only the other 2 statistically significant features - user and movie for our further analysis
+#' Given that we have already exhausted our options so far and the fact that 
+#' adding timestamp had very little impact on our RMSE, we will now focus 
+#' on **Regularizing our data** and consider only the 
+#' other 2 statistically significant features - user and movie for our further analysis
 #' 
 ## -------------------------------------------------------------------------------------
 # Perform cross-validation to choose lambda, our tuning parameter.
@@ -887,7 +1051,8 @@ rmse_results <- bind_rows(rmse_results,
 rmse_results %>% knitr::kable()
 
 
-#' The regularized model has yielded the lowest RMSE thus far. However, this model is only accounting for the following key things:
+#' The regularized model has yielded the lowest RMSE thus far. However, this 
+#' model is only accounting for the following key things:
 #' 
 #' 1. Variations from movie to movie ratings (the movie related biases)
 #' 
@@ -900,9 +1065,14 @@ rmse_results %>% knitr::kable()
 #' #### Matrix Factorization using Recommender System
 #' 
 #' 
-#' As demonstrated in the data exploration earlier in this report, we can think of this data as a very large matrix, with users on the rows and movies on the columns, with many empty cells. The amount of computation required to build the entire matrix of user by movie is very high. 
+#' As demonstrated in the data exploration earlier in this report, we can think 
+#' of this data as a very large matrix, with users on the rows and movies on the 
+#' columns, with many empty cells. The amount of computation required to build 
+#' the entire matrix of user by movie is very high. 
 #' 
-#' To deal with this challenge, we will employ a recommendation system using the **recosystem** library. The **recosystem** is typically used to approximate an incomplete matrix using the product of two matrices in a latent space.
+#' To deal with this challenge, we will employ a recommendation system using 
+#' the **recosystem** library. The **recosystem** is typically used to approximate 
+#' an incomplete matrix using the product of two matrices in a latent space.
 #' 
 ## -------------------------------------------------------------------------------------
 #' Step 1: Build the model
@@ -998,7 +1168,9 @@ rmse_results <- bind_rows(rmse_results,
 rmse_results %>% knitr::kable()
 
 
-#' The RMSE has improved further to **0.8003622**. This is the **lowest** of all the prior models we built above. Consequently, we will now subject this model to the final hold-out validation set below to see the results.
+#' The RMSE has improved further to **0.8003622**. This is the **lowest** of all 
+#' the prior models we built above. Consequently, we will now subject this model 
+#' to the final hold-out validation set below to see the results.
 #' \newpage
 #' 
 #' # Results
@@ -1082,22 +1254,55 @@ rmse_results %>% knitr::kable()
 
 #' 
 #' ## Model Performance
-#' The results documented in the above table demonstrate how we improved performance of our models by gradually adding the biases followed by regularization for user and movie effects. The **recommender system employing Matrix Factorization** yielded the best performance as we confirmed it against the final hold-out validation set to get the **lowest RMSE score of 0.7939**. 
+#' The results documented in the above table demonstrate how we improved performance 
+#' of our models by gradually adding the biases followed by regularization for 
+#' user and movie effects. The **recommender system employing Matrix Factorization** 
+#' yielded the best performance as we confirmed it against the final 
+#' hold-out validation set to get the **lowest RMSE score of 0.7939**. 
 #' 
 #' \newpage
 #' # Conclusion
-#' We started our analysis by data exploration and visualization, something that should always be undertaken to get a sense of what it is that needs to be analyzed. The findings of this exploration helped us evaluate if the data required some pre-processing or data wrangling work, as we call it.
+#' We started our analysis by data exploration and visualization, something that 
+#' should always be undertaken to get a sense of what it is that needs to be analyzed. 
+#' The findings of this exploration helped us evaluate if the data required some 
+#' pre-processing or data wrangling work, as we call it.
 #' 
-#' After building a decent understanding of our data set, we started our modeling with simple linear regression to determine the statistically significant factors. We gradually added these factors one by one to make predictions and generate the RMSE score, the metric used for our decision-making purposes. As we progressed, we found that of the various features, userId and movieId had the most impact on our RMSE. We enhanced our model by undertaking Regularization to achieve an RMSE value that was very close to our desired RMSE of < 0.86490. However, that model missed out on the challenge with sparsity of the matrix; something that could be addressed using a recommender system.
+#' After building a decent understanding of our data set, we started our modeling 
+#' with simple linear regression to determine the statistically significant factors. 
+#' We gradually added these factors one by one to make predictions and generate 
+#' the RMSE score, the metric used for our decision-making purposes. As we progressed, 
+#' we found that of the various features, userId and movieId had the most impact 
+#' on our RMSE. We enhanced our model by undertaking Regularization to achieve 
+#' an RMSE value that was very close to our desired RMSE of < 0.86490. However, 
+#' that model missed out on the challenge with sparsity of the matrix; something 
+#' that could be addressed using a recommender system.
 #' 
-#' The recommender system using the recosystem library helped achieve a better performance as measured using the RMSE score of 0.7939 (much lower than our desired RMSE of 0.86490) against our final hold-out validation set.
+#' The recommender system using the recosystem library helped achieve a better 
+#' performance as measured using the RMSE score of 0.7939 (much lower than our 
+#' desired RMSE of 0.86490) against our final hold-out validation set.
 #' 
-#' **Chosen Model**: We choose the recommender system using Matrix Factorization for this project as it yielded the lowest RMSE score of 0.7939 (much < 0.86490).
+#' **Chosen Model**: We choose the recommender system using Matrix Factorization 
+#' for this project as it yielded the lowest RMSE score of 0.7939 (much < 0.86490).
 #' 
 #' ## Limitations
-#' While we noticed from the Error bar plot for Generes effects, we didn't really focus much on that feature for our current analysis. One of the challenges with doing the Genres related analysis was the fact that the column contained pipe-delimited multiple values for Genres. Using the resources just on the local machine it would be very difficult to undertake comprehensive analysis for this feature because it will require even more computation resources.
+#' While we noticed from the Error bar plot for Generes effects, we didn't really 
+#' focus much on that feature for our current analysis. One of the challenges 
+#' with doing the Genres related analysis was the fact that the column contained 
+#' pipe-delimited multiple values for Genres. Using the resources just on the 
+#' local machine it would be very difficult to undertake comprehensive analysis 
+#' for this feature because it will require even more computation resources.
 #' 
 #' ## Future Work
-#' We can possibly continue with our future analysis focused on Genres effect. One of the first things that would need to be done is further data wrangling just for the Genres column such that we have all genres for a given row arranged in an alphabetically sorted fashion. Doing so would allow us to prepare our data for one-hot encoding of the Genres column that could then be later included for further impact on our dependent variable, ratings. We can also consider running this in a cloud environment; albeit, I would admit that I am still getting to know data science. I know Python has some really good libraries that are much more optimized than R so that is another option to consider - build the model in Python and run it in Google Cloud lab to get more computation power.
+#' We can possibly continue with our future analysis focused on Genres effect. 
+#' One of the first things that would need to be done is further data wrangling 
+#' just for the Genres column such that we have all genres for a given row 
+#' arranged in an alphabetically sorted fashion. Doing so would allow us to 
+#' prepare our data for one-hot encoding of the Genres column that could then be 
+#' later included for further impact on our dependent variable, ratings. 
+#' We can also consider running this in a cloud environment; albeit, I would 
+#' admit that I am still getting to know data science. I know Python has some 
+#' really good libraries that are much more optimized than R so that is another 
+#' option to consider - build the model in Python and run it in Google Cloud lab 
+#' to get more computation power.
 #' 
 #' \newpage
